@@ -7,8 +7,10 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.15351798831750743 0.639407825835244 0.7533855981657681 0.6170408740657447
-  position -0.4893163498083929 -0.325790723934152 0.39517751438610593
+  orientation 0.3392756492060746 -0.08114165034643168 -0.9371809144636131 3.5825794130168824
+  position 1.4373189463910945 -0.7513582771595545 1.3802717374112805
+  follow "robot:body"
+  followType "Pan and Tilt Shot"
 }
 TexturedBackground {
 }
@@ -17,10 +19,12 @@ TexturedBackgroundLight {
 RectangleArena {
 }
 Robot {
-  translation 0 0 0.06
+  translation 0 -3.271811796298479e-09 0.05935156773620261
+  rotation 1 0 0 2.6915526672515e-08
   children [
     DEF hingejoint_2 HingeJoint {
       jointParameters HingeJointParameters {
+        position 1.4205303600078874e-12
         axis 0 1 0
         anchor 0 -0.052 -0.02
       }
@@ -31,7 +35,7 @@ Robot {
       ]
       endPoint DEF wheel_2 Solid {
         translation 0 -0.052 -0.02
-        rotation 1 0 0 1.5708
+        rotation 1 7.102625710590515e-13 -7.102651800039438e-13 1.5708
         children [
           DEF wheel_2 Shape {
             appearance PBRAppearance {
@@ -53,6 +57,7 @@ Robot {
     }
     DEF hingejoint_1 HingeJoint {
       jointParameters HingeJointParameters {
+        position 1.4194201369832622e-12
         axis 0 1 0
         anchor 0 0.052 -0.02
       }
@@ -63,7 +68,7 @@ Robot {
       ]
       endPoint Solid {
         translation 0 0.052 -0.02
-        rotation 1 0 0 1.5708
+        rotation 1 7.097074615857735e-13 -7.097100684916312e-13 1.5708
         children [
           DEF wheel_1 Shape {
             appearance PBRAppearance {
