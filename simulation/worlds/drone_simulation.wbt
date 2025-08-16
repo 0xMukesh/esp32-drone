@@ -1,16 +1,111 @@
 #VRML_SIM R2025a utf8
+
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.5773 0.5773 0.5773 2.0944
-  position 0 0 10
+  orientation -0.15351798831750743 0.639407825835244 0.7533855981657681 0.6170408740657447
+  position -0.4893163498083929 -0.325790723934152 0.39517751438610593
 }
 TexturedBackground {
 }
 TexturedBackgroundLight {
 }
 RectangleArena {
+}
+Robot {
+  translation 0 0 0.06
+  children [
+    DEF hingejoint_2 HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor 0 -0.052 -0.02
+      }
+      device [
+        DEF motor_2 RotationalMotor {
+          name "motor_2"
+        }
+      ]
+      endPoint DEF wheel_2 Solid {
+        translation 0 -0.052 -0.02
+        rotation 1 0 0 1.5708
+        children [
+          DEF wheel_2 Shape {
+            appearance PBRAppearance {
+              baseColor 1 0 0
+              roughness 1
+              metalness 0
+            }
+            geometry Cylinder {
+              height 0.005
+              radius 0.04
+            }
+          }
+        ]
+        name "wheel_2"
+        boundingObject USE wheel_2
+        physics Physics {
+        }
+      }
+    }
+    DEF hingejoint_1 HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 1 0
+        anchor 0 0.052 -0.02
+      }
+      device [
+        DEF motor_1 RotationalMotor {
+          name "motor_1"
+        }
+      ]
+      endPoint Solid {
+        translation 0 0.052 -0.02
+        rotation 1 0 0 1.5708
+        children [
+          DEF wheel_1 Shape {
+            appearance PBRAppearance {
+              baseColor 1 0 0
+              roughness 1
+              metalness 0
+            }
+            geometry Cylinder {
+              height 0.005
+              radius 0.04
+            }
+          }
+        ]
+        name "wheel_1"
+        boundingObject USE wheel_1
+        physics Physics {
+        }
+      }
+    }
+    Solid {
+      translation 0 0 -1.2315405768438537e-05
+      children [
+        DEF body Shape {
+          appearance PBRAppearance {
+            baseColor 0 0 1
+            roughness 1
+            metalness 0
+          }
+          geometry Cylinder {
+            height 0.1
+            radius 0.05
+          }
+        }
+      ]
+      name "body"
+      boundingObject USE body
+      physics Physics {
+      }
+    }
+  ]
+  boundingObject USE body
+  physics Physics {
+  }
+  controller "drive_robot"
 }
