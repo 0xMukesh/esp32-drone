@@ -4,6 +4,15 @@
 
 #include <secrets.hpp>
 
+struct DroneState
+{
+  float throttle;
+  float pitch;
+  float roll;
+  float yaw;
+  bool emergencyStop;
+};
+
 WebSocketsServer ws = WebSocketsServer(80);
 
 void wsEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
