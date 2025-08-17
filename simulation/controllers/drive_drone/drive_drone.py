@@ -15,6 +15,13 @@ class DriveDroneController:
         self.motor_defs = ["m1_motor", "m2_motor", "m3_motor", "m4_motor"]
         self.motors: list[Motor] = []
 
+        self._setup()
+
+    def _setup(self):
+        # enable listening to keyboard inputs
+        self.keyboard.enable(self.timestep)
+
+        # initialize virtual motor components
         for motor in self.motor_defs:
             self.motors.append(cast(Motor, self.robot.getDevice(motor)))
 
@@ -22,10 +29,22 @@ class DriveDroneController:
             motor.setPosition(float("inf"))
             motor.setVelocity(0.0)
 
+    def _send_to_esp32(self, command: str):
+        self.ser.write(bytes(f"{command}\n", "UTF-8"))
+
     def run(self):
         while self.robot.step(self.timestep) != -1:
-            if self.sim_step < 20:
-                self.ser.write(bytes("hello\n", "UTF-8"))
+            if self.sim_step < 10:
+                if self.ser.in_waiting:
+                    recieved = self.ser.readline().decode()
+
+                    if recieved.startswith("DATA:"):
+                        msg = recieved.split("DATA:")[1]
+                        print(msg)
+                    elif recieved.startswith("DEBUG:"):
+                        print(recieved)
+
+                self._send_to_esp32("UP")
 
             self.sim_step += 1
 
