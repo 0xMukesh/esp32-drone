@@ -3,14 +3,13 @@
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/bitcraze/crazyflie/protos/Crazyflie.proto"
 
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.3392756492060746 -0.08114165034643168 -0.9371809144636131 3.5825794130168824
-  position 1.4373189463910945 -0.7513582771595545 1.3802717374112805
-  follow "robot:body"
-  followType "Pan and Tilt Shot"
+  orientation -0.08015481783740533 0.9363692227458674 0.34174242328360827 0.4909074811988074
+  position -0.2351415777796718 -0.04516024495874499 0.12762155579037948
 }
 TexturedBackground {
 }
@@ -18,99 +17,6 @@ TexturedBackgroundLight {
 }
 RectangleArena {
 }
-Robot {
-  translation 0 -3.271811796298479e-09 0.05935156773620261
-  rotation 1 0 0 2.6915526672515e-08
-  children [
-    DEF hingejoint_2 HingeJoint {
-      jointParameters HingeJointParameters {
-        position 1.4205303600078874e-12
-        axis 0 1 0
-        anchor 0 -0.052 -0.02
-      }
-      device [
-        DEF motor_2 RotationalMotor {
-          name "motor_2"
-        }
-      ]
-      endPoint DEF wheel_2 Solid {
-        translation 0 -0.052 -0.02
-        rotation 1 7.102625710590515e-13 -7.102651800039438e-13 1.5708
-        children [
-          DEF wheel_2 Shape {
-            appearance PBRAppearance {
-              baseColor 1 0 0
-              roughness 1
-              metalness 0
-            }
-            geometry Cylinder {
-              height 0.005
-              radius 0.04
-            }
-          }
-        ]
-        name "wheel_2"
-        boundingObject USE wheel_2
-        physics Physics {
-        }
-      }
-    }
-    DEF hingejoint_1 HingeJoint {
-      jointParameters HingeJointParameters {
-        position 1.4194201369832622e-12
-        axis 0 1 0
-        anchor 0 0.052 -0.02
-      }
-      device [
-        DEF motor_1 RotationalMotor {
-          name "motor_1"
-        }
-      ]
-      endPoint Solid {
-        translation 0 0.052 -0.02
-        rotation 1 7.097074615857735e-13 -7.097100684916312e-13 1.5708
-        children [
-          DEF wheel_1 Shape {
-            appearance PBRAppearance {
-              baseColor 1 0 0
-              roughness 1
-              metalness 0
-            }
-            geometry Cylinder {
-              height 0.005
-              radius 0.04
-            }
-          }
-        ]
-        name "wheel_1"
-        boundingObject USE wheel_1
-        physics Physics {
-        }
-      }
-    }
-    Solid {
-      translation 0 0 -1.2315405768438537e-05
-      children [
-        DEF body Shape {
-          appearance PBRAppearance {
-            baseColor 0 0 1
-            roughness 1
-            metalness 0
-          }
-          geometry Cylinder {
-            height 0.1
-            radius 0.05
-          }
-        }
-      ]
-      name "body"
-      boundingObject USE body
-      physics Physics {
-      }
-    }
-  ]
-  boundingObject USE body
-  physics Physics {
-  }
-  controller "drive_robot"
+Crazyflie {
+  controller "drive_drone"
 }

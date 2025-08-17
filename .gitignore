@@ -1,6 +1,6 @@
-src/secrets.hpp
-
 .pio
+.venv
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/settings.json
+src/secrets.hpp
