@@ -1,4 +1,4 @@
-from controller import Robot, Motor
+from controller import Robot, Motor, Keyboard
 import serial
 from typing import cast
 
@@ -32,19 +32,29 @@ class DriveDroneController:
     def _send_to_esp32(self, command: str):
         self.ser.write(bytes(f"{command}\n", "UTF-8"))
 
+    def _handle_recieved_data(self):
+        if self.ser.in_waiting:
+            line = self.ser.readline().decode()
+
+            if line.startswith("DATA:"):
+                speeds = [int(v) for v in line.split("DATA:")[1].split(",")]
+
+                for i, motor in enumerate(self.motors):
+                    motor.setVelocity(speeds[i])
+
+    def _handle_keyboard_input(self):
+        key = self.keyboard.getKey()
+
+        while key != -1:
+            if key == Keyboard.UP:
+                self._send_to_esp32("UP")
+
+            key = self.keyboard.getKey()
+
     def run(self):
         while self.robot.step(self.timestep) != -1:
-            if self.sim_step < 10:
-                if self.ser.in_waiting:
-                    recieved = self.ser.readline().decode()
-
-                    if recieved.startswith("DATA:"):
-                        msg = recieved.split("DATA:")[1]
-                        print(msg)
-                    elif recieved.startswith("DEBUG:"):
-                        print(recieved)
-
-                self._send_to_esp32("UP")
+            self._handle_recieved_data()
+            self._handle_keyboard_input()
 
             self.sim_step += 1
 
