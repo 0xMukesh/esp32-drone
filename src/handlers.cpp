@@ -2,7 +2,9 @@
 
 namespace Handlers
 {
-    DroneHandler::DroneHandler() {}
+    DroneHandler::DroneHandler()
+    {
+    }
 
     void DroneHandler::sendMotorSpeeds(float speeds[4])
     {
@@ -26,7 +28,7 @@ namespace Handlers
     {
         unsigned long current_time = millis();
 
-        if (current_time - last_pid_update >= PID_UPDATE_INTERVAL && motors_active)
+        if (drone_state == DroneState::FLYING && (current_time - last_pid_update >= PID_UPDATE_INTERVAL))
         {
             float pid_output = altitude_pid.update(tokens[1].toFloat());
             float motor_speed = BASE_HOVER_SPEED + pid_output;
@@ -40,9 +42,33 @@ namespace Handlers
 
     void DroneHandler::updateSetpoint(const std::vector<String> &tokens)
     {
-        float new_setpoint = tokens[1].toFloat();
-        altitude_pid.setSetpoint(new_setpoint);
+        if (drone_state == DroneState::ARMED || drone_state == DroneState::FLYING)
+        {
+            float new_setpoint = tokens[1].toFloat();
+            altitude_pid.setSetpoint(new_setpoint);
+            // altitude_pid.reset();
+            drone_state = DroneState::FLYING;
+        }
+    }
+
+    void DroneHandler::handleArm()
+    {
+        if (drone_state == DroneState::DISARMED)
+        {
+            drone_state = DroneState::ARMED;
+
+            altitude_pid.reset();
+            float speeds[4] = {BASE_HOVER_SPEED, BASE_HOVER_SPEED, BASE_HOVER_SPEED, BASE_HOVER_SPEED};
+            sendMotorSpeeds(speeds);
+        }
+    }
+
+    void DroneHandler::handleLand()
+    {
+        drone_state = DroneState::DISARMED;
+
+        float speeds[4] = {0.0, 0.0, 0.0, 0.0};
+        sendMotorSpeeds(speeds);
         altitude_pid.reset();
-        motors_active = true;
     }
 }

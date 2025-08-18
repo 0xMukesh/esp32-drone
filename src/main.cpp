@@ -32,6 +32,14 @@ void loop()
         {
           droneHandler.updateSetpoint(tokens);
         }
+        else if (tokens[0] == "ARM")
+        {
+          droneHandler.handleArm();
+        }
+        else if (tokens[0] == "LAND")
+        {
+          droneHandler.handleLand();
+        }
       }
     }
   }

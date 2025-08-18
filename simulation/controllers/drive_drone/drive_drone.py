@@ -34,6 +34,9 @@ class DriveDroneController:
             motor.setPosition(float("inf"))
             motor.setVelocity(0.0)
 
+        # setting all of them to be in disarmed mode
+        self._send_to_esp32("LAND")
+
         # initialize gps component
         self.gps = cast(GPS, self.robot.getDevice("gps"))
         self.gps.enable(self.timestep)
@@ -64,7 +67,11 @@ class DriveDroneController:
         key = self.keyboard.getKey()
 
         while key != -1:
-            if key == Keyboard.UP:
+            if key == ord("A"):
+                self._send_to_esp32(f"ARM")
+            elif key == ord("L"):
+                self._send_to_esp32(f"LAND")
+            elif key == Keyboard.UP:
                 self.target_altitude += self.altitude_step
                 self._send_to_esp32(f"SET:{self.target_altitude:.4f}")
             elif key == Keyboard.DOWN:
@@ -81,11 +88,6 @@ class DriveDroneController:
             self._update_altitude()
             self._handle_recieved_data()
             self._handle_keyboard_input()
-
-            # if self.up_start is not None and self.sim_step - self.up_start > 50:
-            #     print("hovering triggered")
-            #     self._send_to_esp32("HOVER")
-            #     self.up_start = None
 
             self.sim_step += 1
 
