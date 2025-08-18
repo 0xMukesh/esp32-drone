@@ -1,5 +1,8 @@
 #include <Arduino.h>
 
+#include <./include/drone/utils.hpp>
+#include <./include/drone/handlers.hpp>
+
 void setup()
 {
   Serial.begin(9600);
@@ -14,14 +17,21 @@ void loop()
 
     if (data.length() > 0)
     {
-      Serial.printf("DEBUG:recieved from webots: %s\n", data);
+      std::vector<String> tokens = Utils::splitString(data, ':');
 
-      if (data == "UP")
+      if (tokens.size() >= 1)
       {
-        Serial.printf("DATA:5,5,5,5\n");
+        Handlers::DroneHandler droneHandler = Handlers::DroneHandler(tokens);
+
+        if (tokens[0] == "ALT")
+        {
+          droneHandler.handleUpdateAltitude();
+        }
+        else if (tokens[0] == "SET")
+        {
+          droneHandler.updateSetpoint();
+        }
       }
     }
-
-    delay(10);
   }
 }
