@@ -3,6 +3,8 @@
 #include <./include/drone/utils.hpp>
 #include <./include/drone/handlers.hpp>
 
+Handlers::DroneHandler droneHandler = Handlers::DroneHandler();
+
 void setup()
 {
   Serial.begin(9600);
@@ -21,15 +23,14 @@ void loop()
 
       if (tokens.size() >= 1)
       {
-        Handlers::DroneHandler droneHandler = Handlers::DroneHandler(tokens);
 
         if (tokens[0] == "ALT")
         {
-          droneHandler.handleUpdateAltitude();
+          droneHandler.handleUpdateAltitude(tokens);
         }
         else if (tokens[0] == "SET")
         {
-          droneHandler.updateSetpoint();
+          droneHandler.updateSetpoint(tokens);
         }
       }
     }

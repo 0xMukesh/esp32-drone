@@ -18,7 +18,7 @@ class DriveDroneController:
         self.current_altitude = 0
         self.target_altitude = 0
 
-        self.altitude_step = 0.5
+        self.altitude_step = 0.1
 
         self._setup()
 
@@ -69,6 +69,8 @@ class DriveDroneController:
                 self._send_to_esp32(f"SET:{self.target_altitude:.4f}")
             elif key == Keyboard.DOWN:
                 self.target_altitude -= self.altitude_step
+                if self.target_altitude < 0:
+                    self.target_altitude = 0
                 self._send_to_esp32(f"SET:{self.target_altitude:.4f}")
 
             key = self.keyboard.getKey()

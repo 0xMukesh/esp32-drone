@@ -2,9 +2,7 @@
 
 namespace Handlers
 {
-    DroneHandler::DroneHandler(std::vector<String> tokens) : tokens(tokens)
-    {
-    }
+    DroneHandler::DroneHandler() {}
 
     void DroneHandler::sendMotorSpeeds(float speeds[4])
     {
@@ -24,7 +22,7 @@ namespace Handlers
         Serial.println(msg);
     };
 
-    void DroneHandler::handleUpdateAltitude()
+    void DroneHandler::handleUpdateAltitude(const std::vector<String> &tokens)
     {
         unsigned long current_time = millis();
 
@@ -35,13 +33,16 @@ namespace Handlers
 
             float speeds[4] = {motor_speed, motor_speed, motor_speed, motor_speed};
             sendMotorSpeeds(speeds);
+
+            last_pid_update = current_time;
         }
     }
 
-    void DroneHandler::updateSetpoint()
+    void DroneHandler::updateSetpoint(const std::vector<String> &tokens)
     {
         float new_setpoint = tokens[1].toFloat();
         altitude_pid.setSetpoint(new_setpoint);
+        altitude_pid.reset();
         motors_active = true;
     }
 }

@@ -10,8 +10,7 @@ namespace Handlers
     class DroneHandler
     {
     private:
-        std::vector<String> tokens;
-        Helpers::PIDController altitude_pid = Helpers::PIDController(8.0, 1.5, 3.5, 0.0);
+        Helpers::PIDController altitude_pid = Helpers::PIDController(10, 5, 5, 0);
 
         const float MOTOR_MIN_SPEED = 45;
         const float MOTOR_MAX_SPEED = 70;
@@ -25,9 +24,9 @@ namespace Handlers
         void sendMotorSpeeds(float speeds[4]);
 
     public:
-        DroneHandler(std::vector<String> tokens);
+        DroneHandler();
 
-        void handleUpdateAltitude();
-        void updateSetpoint();
+        void handleUpdateAltitude(const std::vector<String> &tokens);
+        void updateSetpoint(const std::vector<String> &tokens);
     };
 }

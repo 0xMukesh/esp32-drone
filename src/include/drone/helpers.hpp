@@ -11,11 +11,11 @@ namespace Helpers
         float integral;
         unsigned long previous_time;
 
-        float INTEGRAL_MAX = 25.0;
-        float INTEGRAL_MIN = -25.0;
+        float INTEGRAL_MAX = 10.0;
+        float INTEGRAL_MIN = -10.0;
 
-        float OUTPUT_MAX = 40.0;
-        float OUTPUT_MIN = -40.0;
+        float OUTPUT_MAX = 15.0;
+        float OUTPUT_MIN = -15.0;
 
     public:
         PIDController(float kp, float ki, float kd, float sp);
