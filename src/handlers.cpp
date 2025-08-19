@@ -30,8 +30,18 @@ namespace Handlers
 
         if (drone_state == DroneState::FLYING && (current_time - last_pid_update >= PID_UPDATE_INTERVAL))
         {
-            float pid_output = altitude_pid.update(tokens[1].toFloat());
+            float current_altitude = tokens[1].toFloat();
+            float pid_output = altitude_pid.update(current_altitude);
+            float error = altitude_pid.getSetpoint() - current_altitude;
+
+            // when it is close to the target, reduce the output a bit
+            if (abs(error) < ALTITUDE_DEADBAND)
+            {
+                pid_output *= 0.5;
+            }
+
             float motor_speed = BASE_HOVER_SPEED + pid_output;
+            motor_speed = constrain(motor_speed, MOTOR_MIN_SPEED, MOTOR_MAX_SPEED);
 
             float speeds[4] = {motor_speed, motor_speed, motor_speed, motor_speed};
             sendMotorSpeeds(speeds);
@@ -45,8 +55,22 @@ namespace Handlers
         if (drone_state == DroneState::ARMED || drone_state == DroneState::FLYING)
         {
             float new_setpoint = tokens[1].toFloat();
+            float current_setpoint = altitude_pid.getSetpoint();
+            float setpoint_change = new_setpoint - current_setpoint;
+
+            if (abs(setpoint_change) > MAX_SETPOINT_CHANGE_RATE)
+            {
+                if (setpoint_change > 0)
+                {
+                    new_setpoint = current_setpoint + MAX_SETPOINT_CHANGE_RATE;
+                }
+                else
+                {
+                    new_setpoint = current_setpoint - MAX_SETPOINT_CHANGE_RATE;
+                }
+            }
+
             altitude_pid.setSetpoint(new_setpoint);
-            // altitude_pid.reset();
             drone_state = DroneState::FLYING;
         }
     }
