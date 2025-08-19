@@ -24,30 +24,23 @@ namespace Handlers
         Serial.println(msg);
     };
 
-    void DroneHandler::handleUpdateAltitude(const std::vector<String> &tokens)
+    void DroneHandler::handleArm()
     {
-        unsigned long current_time = millis();
-
-        if (drone_state == DroneState::FLYING && (current_time - last_pid_update >= PID_UPDATE_INTERVAL))
+        if (drone_state == DroneState::DISARMED)
         {
-            float current_altitude = tokens[1].toFloat();
-            float pid_output = altitude_pid.update(current_altitude);
-            float error = altitude_pid.getSetpoint() - current_altitude;
-
-            // when it is close to the target, reduce the output a bit
-            if (abs(error) < ALTITUDE_DEADBAND)
-            {
-                pid_output *= 0.5;
-            }
-
-            float motor_speed = BASE_HOVER_SPEED + pid_output;
-            motor_speed = constrain(motor_speed, MOTOR_MIN_SPEED, MOTOR_MAX_SPEED);
-
-            float speeds[4] = {motor_speed, motor_speed, motor_speed, motor_speed};
+            drone_state = DroneState::ARMED;
+            altitude_pid.reset();
+            float speeds[4] = {BASE_HOVER_SPEED, BASE_HOVER_SPEED, BASE_HOVER_SPEED, BASE_HOVER_SPEED};
             sendMotorSpeeds(speeds);
-
-            last_pid_update = current_time;
         }
+    }
+
+    void DroneHandler::handleLand()
+    {
+        drone_state = DroneState::DISARMED;
+        altitude_pid.reset();
+        float speeds[4] = {0.0, 0.0, 0.0, 0.0};
+        sendMotorSpeeds(speeds);
     }
 
     void DroneHandler::updateSetpoint(const std::vector<String> &tokens)
@@ -75,24 +68,29 @@ namespace Handlers
         }
     }
 
-    void DroneHandler::handleArm()
+    void DroneHandler::handleUpdateAltitude(const std::vector<String> &tokens)
     {
-        if (drone_state == DroneState::DISARMED)
+        unsigned long current_time = millis();
+
+        if (drone_state == DroneState::FLYING && (current_time - last_pid_update >= PID_UPDATE_INTERVAL))
         {
-            drone_state = DroneState::ARMED;
+            float current_altitude = tokens[1].toFloat();
+            float pid_output = altitude_pid.update(current_altitude);
+            float error = altitude_pid.getSetpoint() - current_altitude;
 
-            altitude_pid.reset();
-            float speeds[4] = {BASE_HOVER_SPEED, BASE_HOVER_SPEED, BASE_HOVER_SPEED, BASE_HOVER_SPEED};
+            // when it is close to the target, reduce the output a bit
+            if (abs(error) < ALTITUDE_DEADBAND)
+            {
+                pid_output *= 0.5;
+            }
+
+            float motor_speed = BASE_HOVER_SPEED + pid_output;
+            motor_speed = constrain(motor_speed, MOTOR_MIN_SPEED, MOTOR_MAX_SPEED);
+
+            float speeds[4] = {motor_speed, motor_speed, motor_speed, motor_speed};
             sendMotorSpeeds(speeds);
+
+            last_pid_update = current_time;
         }
-    }
-
-    void DroneHandler::handleLand()
-    {
-        drone_state = DroneState::DISARMED;
-
-        float speeds[4] = {0.0, 0.0, 0.0, 0.0};
-        sendMotorSpeeds(speeds);
-        altitude_pid.reset();
     }
 }

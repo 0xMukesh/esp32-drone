@@ -21,14 +21,9 @@ namespace Helpers
 
         float error = setpoint - current_value;
 
-        // Proportional term
-        float p_part = kp * error;
-
-        // Integral term with windup protection
-        // Only accumulate integral if we're not saturated
         integral += error * dt;
 
-        // More aggressive integral clamping during setpoint changes
+        // clamp the integral term more aggressively during transition changes i.e. when setpoint changes
         if (setpoint_changed)
         {
             integral = constrain(integral, INTEGRAL_MIN * 0.5, INTEGRAL_MAX * 0.5);
@@ -39,29 +34,28 @@ namespace Helpers
             integral = constrain(integral, INTEGRAL_MIN, INTEGRAL_MAX);
         }
 
+        float p_part = kp * error;
         float i_part = ki * integral;
-
-        // Derivative term - calculate from measurement to avoid derivative kick
         float d_part = 0;
+
+        // calculate d-part only after first iteration
         if (previous_time > 0)
-        { // Only calculate derivative after first iteration
+        {
             d_part = -kd * (current_value - previous_measurement) / dt;
         }
 
         float output = p_part + i_part + d_part;
 
-        // Check for output saturation and prevent integral windup
         float unconstrained_output = output;
         output = constrain(output, OUTPUT_MIN, OUTPUT_MAX);
 
-        // Anti-windup: if output is saturated, don't let integral grow further in that direction
+        // if the unconstrained output is saturated and the target altitude has not been reached, then adding the integral contribution would make it worse
         if ((unconstrained_output > OUTPUT_MAX && error > 0) ||
             (unconstrained_output < OUTPUT_MIN && error < 0))
         {
-            integral -= error * dt; // Remove the integral contribution we just added
+            integral -= error * dt;
         }
 
-        previous_error = error;
         previous_measurement = current_value;
         previous_time = current_time;
 
@@ -71,17 +65,16 @@ namespace Helpers
     void PIDController::setSetpoint(float sp)
     {
         if (abs(sp - setpoint) > 0.01)
-        { // Only flag as changed if significant difference
+        {
             setpoint_changed = true;
 
-            // For large setpoint changes, reduce integral more aggressively
             if (abs(sp - setpoint) > 0.5)
             {
-                integral *= 0.3; // Reduce integral to 30% of current value
+                integral *= 0.3;
             }
             else
             {
-                integral *= 0.7; // Reduce integral to 70% of current value
+                integral *= 0.7;
             }
         }
 
@@ -96,7 +89,6 @@ namespace Helpers
 
     void PIDController::reset()
     {
-        previous_error = 0.0;
         previous_measurement = 0.0;
         integral = 0.0;
         previous_time = millis();
